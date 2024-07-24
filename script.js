@@ -187,7 +187,7 @@ function moveToNextLine() {
 function startTimer() {
     timer = setInterval(() => {
         time--;
-        timeDisplay.textContent = `Time: ${time}s`;
+        timeDisplay.textContent = `Time: ${time} seconds`;
         if (time === 0) {
             endGame();
         }
