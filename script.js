@@ -1,5 +1,6 @@
 const words = ['the', 'be', 'to', 'of', 'and', 'a', 'in', 'that', 'have', 'I', 'it', 'for', 'not', 'on', 'with', 'he', 'as', 'you', 'do', 'at', 'this', 'but', 'his', 'by', 'from', 'they', 'we', 'say', 'her', 'she', 'or', 'an', 'will', 'my', 'one', 'all', 'would', 'there', 'their', 'what', 'so', 'up', 'out', 'if', 'about', 'who', 'get', 'which', 'go', 'me', 'when', 'make', 'can', 'like', 'time', 'no', 'just', 'him', 'know', 'take', 'people', 'into', 'year', 'your', 'good', 'some', 'could', 'them', 'see', 'other', 'than', 'then', 'now', 'look', 'only', 'come', 'its', 'over', 'think', 'also', 'back', 'after', 'use', 'two', 'how', 'our', 'work', 'first', 'well', 'way', 'even', 'new', 'want', 'because', 'any', 'these', 'give', 'day', 'most', 'us', 'is', 'are', 'was', 'were', 'been', 'has', 'had', 'may', 'might', 'must', 'should', 'could', 'would', 'can', 'cannot', 'shall', 'will', 'am', 'where', 'why', 'when', 'who', 'whom', 'whose', 'which', 'what', 'whatever', 'whoever', 'whomever', 'whichever', 'whenever', 'wherever', 'however', 'although', 'though', 'even', 'if', 'unless', 'until', 'provided', 'assuming', 'while', 'because', 'since', 'so', 'that', 'in', 'order', 'as', 'long', 'due', 'to', 'owing', 'considering', 'inasmuch', 'forasmuch', 'seeing', 'being', 'do', 'does', 'did', 'done', 'made', 'makes', 'making', 'take', 'takes', 'taking', 'took', 'taken', 'give', 'gives', 'giving', 'gave', 'given', 'go', 'goes', 'going', 'went', 'gone', 'come', 'comes', 'coming', 'came', 'get', 'gets', 'getting', 'got', 'gotten', 'put', 'puts', 'putting', 'set', 'sets', 'setting', 'sat', 'sat', 'let', 'lets', 'letting', 'run', 'runs', 'running', 'ran'];
 
+// Global Variables
 let currentWords = [];
 let score = 0;
 let time = 60;
@@ -7,13 +8,11 @@ let timer;
 let difficulty = 'easy';
 let totalCharacters = 0;
 let lastTypedTime = Date.now();
-
-
 let currentLines = [];
 let currentLineIndex = 0;
 let currentWordIndex = 0;
 
-
+// HMTL Elements
 const wordDisplay = document.getElementById('word-display');
 const userInput = document.getElementById('user-input');
 const timeDisplay = document.getElementById('time');
@@ -21,6 +20,7 @@ const scoreDisplay = document.getElementById('score');
 const difficultySelect = document.getElementById('difficulty');
 const highScoreDisplay = document.getElementById('high-score');
 
+// Start of program
 function init() {
     // Make sure all elements exist before adding event listeners
     if (difficultySelect && userInput && wordDisplay && scoreDisplay && timeDisplay) {
@@ -35,6 +35,12 @@ function init() {
     }
 }
 
+
+/**
+ * Generates a set of new words and updates the display.
+ * 
+ * @returns {void}
+ */
 function setNewWords() {
     currentLines = [];
     let currentLine = [];
@@ -61,33 +67,43 @@ function setNewWords() {
     updateDisplay();
 }
 
+/**
+ * Scrolls the word display to the current line.
+ */
 function scrollToCurrentLine() {
     const lineHeight = wordDisplay.querySelector('.word-line').offsetHeight;
     const scrollAmount = lineHeight * currentLineIndex;
     wordDisplay.style.transform = `translateY(-${scrollAmount}px)`;
 }
 
+/**
+ * Updates the display of words on the screen.
+ * 
+ * @returns {void}
+ */
 function updateDisplay() {
     const lineElements = currentLines.map((line, lineIndex) => {
-      const words = line.split(' ');
-      const wordSpans = words.map((word, wordIndex) => {
-        const wordElement = document.querySelector(`#word-display .word-line:nth-child(${lineIndex + 1}) span:nth-child(${wordIndex + 1})`);
-        let className = wordElement ? wordElement.className : '';
+
+        const words = line.split(' ');
+        const wordSpans = words.map((word, wordIndex) => {
+            const wordElement = document.querySelector(`#word-display .word-line:nth-child(${lineIndex + 1}) span:nth-child(${wordIndex + 1})`);
+            let className = wordElement ? wordElement.className : '';
+            
+            if (lineIndex === currentLineIndex && wordIndex === currentWordIndex) {
+                className = 'current';
+            } else if (lineIndex > currentLineIndex || (lineIndex === currentLineIndex && wordIndex > currentWordIndex)) {
+                className = ''; // Reset class for upcoming words
+            }
         
-        if (lineIndex === currentLineIndex && wordIndex === currentWordIndex) {
-          className = 'current';
-        } else if (lineIndex > currentLineIndex || (lineIndex === currentLineIndex && wordIndex > currentWordIndex)) {
-          className = ''; // Reset class for upcoming words
-        }
-        
-        return `<span class="${className}">${word}</span>`;
-      });
-      return `<div class="word-line">${wordSpans.join(' ')}</div>`;
+            return `<span class="${className}">${word}</span>`;
+        });
+
+        return `<div class="word-line">${wordSpans.join(' ')}</div>`;
     });
   
     wordDisplay.innerHTML = lineElements.join('');
     scrollToCurrentLine();
-  }
+}
   
 
 function smoothScroll() {
@@ -135,56 +151,64 @@ function checkInput() {
     }
   }
   
-  function handleSpace(e) {
+/**
+ * Handles the key press event for the Space key.
+ * 
+ * @param {KeyboardEvent} e - The key press event object.
+ */
+function handleSpace(e) {
     if (e.code === 'Space') {
-      e.preventDefault();
-      const currentLine = currentLines[currentLineIndex];
-      const words = currentLine.split(' ');
-      
-      if (currentWordIndex >= words.length) {
+        e.preventDefault();
+        const currentLine = currentLines[currentLineIndex];
+        const words = currentLine.split(' ');
+        
+        if (currentWordIndex >= words.length) {
         moveToNextLine();
         return;
-      }
-  
-      const currentWord = words[currentWordIndex];
-      const userWord = userInput.value.trim();
-  
-      const wordElements = document.querySelectorAll('#word-display .word-line')[currentLineIndex].querySelectorAll('span');
-      const currentWordElement = wordElements[currentWordIndex];
-  
-      if (userWord === currentWord) {
+        }
+
+        const currentWord = words[currentWordIndex];
+        const userWord = userInput.value.trim();
+
+        const wordElements = document.querySelectorAll('#word-display .word-line')[currentLineIndex].querySelectorAll('span');
+        const currentWordElement = wordElements[currentWordIndex];
+
+        if (userWord === currentWord) {
         // Word is correct
         currentWordElement.className = 'typed correct';
         score += calculateScore(currentWord);
         totalCharacters += currentWord.length + 1;
-      } else {
+        } else {
         // Word is incorrect
         currentWordElement.className = 'typed incorrect';
         score -= Math.floor(currentWord.length / 2); // Penalty for incorrect word
-      }
-  
-      currentWordIndex++;
-      userInput.value = '';
-      updateDisplay();
-      scoreDisplay.textContent = `Score: ${score}`;
-  
-      if (currentWordIndex >= words.length) {
+        }
+
+        currentWordIndex++;
+        userInput.value = '';
+        updateDisplay();
+        scoreDisplay.textContent = `Score: ${score}`;
+
+        if (currentWordIndex >= words.length) {
         moveToNextLine();
-      }
+        }
     }
-  }
+}
 
 function moveToNextLine() {
+
     currentLineIndex++;
     currentWordIndex = 0;
+
     if (currentLineIndex >= currentLines.length) {
-      setNewWords();
+        setNewWords();
     } else {
-      updateDisplay();
+        updateDisplay();
     }
-  }
+}
 
 function startTimer() {
+
     timer = setInterval(() => {
         time--;
         timeDisplay.textContent = `Time: ${time} seconds`;
@@ -233,6 +257,11 @@ function calculateWPM() {
     return Math.round((totalCharacters / 5) / minutes);
   }
 
+/**
+ * Calculates the score for a given word based on the time taken to type it.
+ * @param {string} word - The word to calculate the score for.
+ * @returns {number} The calculated score for the word.
+ */
 function calculateScore(word) {
     const now = Date.now();
     const timeTaken = (now - lastTypedTime) / 1000; // Time taken in seconds
